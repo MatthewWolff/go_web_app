@@ -170,11 +170,11 @@ func PlotGraph(skew_list []int, w http.ResponseWriter) error {
 // main function holds the information about function handling based on path of the request
 // Similar to routing in Ruby on Rails
 func main() {
-	addr := "0.0.0.0:8000"
+	addr := ":8080"
 	http.HandleFunc("/", index_handler)
 	http.HandleFunc("/get_url/", getUrl_handler)
 	http.HandleFunc("/minskew/", minskew_handler)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
-	fmt.Println("Now running on http://" + addr)
+	fmt.Println("Now running on http://localhost" + addr)
 	http.ListenAndServe(addr, nil)
 }
