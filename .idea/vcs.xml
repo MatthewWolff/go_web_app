@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/github.com/ajstarks/svgo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/github.com/fogleman/gg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/github.com/go-latex/latex" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/github.com/golang/freetype" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/github.com/jung-kurt/gofpdf" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/golang.org/x/exp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/golang.org/x/image" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/gonum.org/v1/gonum" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/gonum.org/v1/plot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/rsc.io/pdf" vcs="Git" />
+  </component>
+</project>

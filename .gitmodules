@@ -1,0 +1,30 @@
+[submodule "src/gonum.org/v1/plot"]
+	path = src/gonum.org/v1/plot
+	url = https://github.com/gonum/plot
+[submodule "src/gonum.org/v1/gonum"]
+	path = src/gonum.org/v1/gonum
+	url = https://github.com/gonum/gonum
+[submodule "src/golang.org/x/image"]
+	path = src/golang.org/x/image
+	url = https://go.googlesource.com/image
+[submodule "src/golang.org/x/exp"]
+	path = src/golang.org/x/exp
+	url = https://go.googlesource.com/exp
+[submodule "src/rsc.io/pdf"]
+	path = src/rsc.io/pdf
+	url = https://github.com/rsc/pdf
+[submodule "src/github.com/jung-kurt/gofpdf"]
+	path = src/github.com/jung-kurt/gofpdf
+	url = https://github.com/jung-kurt/gofpdf
+[submodule "src/github.com/golang/freetype"]
+	path = src/github.com/golang/freetype
+	url = https://github.com/golang/freetype
+[submodule "src/github.com/ajstarks/svgo"]
+	path = src/github.com/ajstarks/svgo
+	url = https://github.com/ajstarks/svgo
+[submodule "src/github.com/fogleman/gg"]
+	path = src/github.com/fogleman/gg
+	url = https://github.com/fogleman/gg
+[submodule "src/github.com/go-latex/latex"]
+	path = src/github.com/go-latex/latex
+	url = https://github.com/go-latex/latex

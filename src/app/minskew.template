@@ -1,0 +1,13 @@
+<html>
+    <head>
+    <title>Url Retrieval Page</title>
+    </head>
+    <body>
+        <h1>Enter the URL of fa.gz file:</h1>
+        <br>
+        <form action="/minskew" method="get">
+            Url:<input type="text" name="url">
+            <input type="submit" value="submit">
+        </form>
+    </body>
+</html>
