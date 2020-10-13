@@ -1,6 +1,6 @@
 *.fasta
 *.gz
-src/app/assets/*jpeg
+src/app/plots/*.jpg
 src/app/app
 pkg/
 

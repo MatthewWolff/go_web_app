@@ -1,0 +1,68 @@
+<html lang="en">
+
+<head>
+    <title>Skew Web App</title>
+    <!-- favicon -->
+    <link rel="icon" href="/site/img/favicon.ico">
+
+    <!-- javascript -->
+    <script type="text/javascript" src="/site/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/site/external/bootstrap/js/bootstrap.js"></script>
+
+    <!-- css -->
+    <link type="text/css" href="/site/external/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+    <link type="text/css" href="/site/external/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+    <link type="text/css" href="/site/css/app.css" rel="stylesheet"/>
+
+    <!-- meta properties -->
+    <meta charset="utf-8">
+    <meta property="og:site_name" content="wolff.sh/go_web_app">
+    <meta property="og:url" content="https://wolff.sh/go_web_app">
+    <meta property="og:title" content="Running a Web App in Go">
+    <meta property="og:description" content="Let's get Skewed">
+    <meta property="og:image" content="/site/img/hideous.jpg">
+    <meta property="og:image:type" content="image/jpg">
+    <meta property="og:image:width" content="1000">
+    <meta property="og:image:height" content="667">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="title" content="Running a Web App in Go">
+    <meta name="description" content="Let's get Skewed">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-124581164-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-124581164-1', {
+            'page_title': 'go_web_app',
+        });
+    </script>
+</head>
+
+<body>
+<header class="intro">
+    <div class="intro-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="brand-heading"> Welcome. </h2>
+                    <p class="intro-text"> Let's learn about Web Apps </p>
+                    <form action="/get_url" method="get">
+                        <button class="btn btn-circle" type="submit">
+                            <i class="fa animated"> ok </i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+
+</html>

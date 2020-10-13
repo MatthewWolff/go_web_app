@@ -1,0 +1,45 @@
+<html lang="en">
+
+<head>
+    <title>Skew Web App</title>
+    <!-- favicon -->
+    <link rel="icon" href="/site/img/favicon.ico">
+
+    <!-- javascript -->
+    <script type="text/javascript" src="/site/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/site/external/bootstrap/js/bootstrap.js"></script>
+
+    <!-- css -->
+    <link type="text/css" href="/site/css/app.css" rel="stylesheet"/>
+    <link type="text/css" href="/site/external/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+    <link type="text/css" href="/site/external/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+
+    <!-- meta properties -->
+    <meta charset="utf-8">
+    <meta property="og:site_name" content="wolff.sh/go_web_app">
+    <meta property="og:url" content="https://wolff.sh/go_web_app">
+    <meta property="og:title" content="Running a Web App in Go">
+    <meta property="og:description" content="Let's get Skewed">
+    <meta property="og:image" content="/site/img/hideous.jpg">
+    <meta property="og:image:type" content="image/jpg">
+    <meta property="og:image:width" content="1000">
+    <meta property="og:image:height" content="667">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="title" content="Running a Web App in Go">
+    <meta name="description" content="Let's get Skewed">
+</head>
+
+<body>
+<div class="row h-100 intro">
+    <div class="col-sm-12 my-auto">
+        <h1 class="d-flex justify-content-center">Enter the URL of fa.gz file:</h1>
+        <br/>
+        <form action="/minskew" method="get" class="d-flex justify-content-center">
+            <h4> URL:</h4>&nbsp;<input type="text" name="url">
+            <input type="submit" value="submit">
+        </form>
+    </div>
+</div>
+</body>
+
+</html>
