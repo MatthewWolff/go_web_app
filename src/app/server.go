@@ -210,11 +210,16 @@ func main() {
 	http.Handle("/site/", http.StripPrefix("/site/", http.FileServer(http.Dir("./site"))))
 
 	// output
-	addr := ":8081"
-	fmt.Println("Now running on http://localhost" + addr)
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		port = "8080"
+	}
+	port = ":" + port
+
+	fmt.Println("Now running on http://localhost" + port)
 	fmt.Println()
 	fmt.Println("HTTP Actions:")
 
 	// start the web server
-	http.ListenAndServe(addr, nil)
+	http.ListenAndServe(port, nil)
 }
