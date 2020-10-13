@@ -7,13 +7,18 @@ import (
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
+	"hash/fnv"
 	"html/template"
 	"image/color"
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 )
+
+const PLOTS = "plots"
+const TEMPLATES = "site/templates"
 
 // Page a small struct to help us use HTML Templates
 type Page struct {
@@ -25,7 +30,7 @@ type Page struct {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method, "on", "index") //get request method
 	if r.Method == "GET" {
-		t, err := template.ParseFiles("site/templates/index.html")
+		t, err := template.ParseFiles(path.Join(TEMPLATES, "index.html"))
 		if err != nil {
 			panic(err)
 		}
@@ -37,7 +42,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func getUrlHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method, "on", "get_url") //get request method
 	if r.Method == "GET" {
-		t, err := template.ParseFiles("site/templates/get_url.html")
+		t, err := template.ParseFiles(path.Join(TEMPLATES, "get_url.html"))
 		if err != nil {
 			panic(err)
 		}
@@ -52,7 +57,7 @@ func minskewHandler(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm() // parse the query that /should/ be attached to the URL
 
 		// grab template
-		t, err := template.ParseFiles("site/templates/minskew.html")
+		t, err := template.ParseFiles(path.Join(TEMPLATES, "minskew.html"))
 		if err != nil {
 			panic(err)
 		}
@@ -60,12 +65,14 @@ func minskewHandler(w http.ResponseWriter, r *http.Request) {
 		var page Page
 		// check if a URL was supplied
 		if url, ok := r.Form["url"]; ok {
-			if err := DownloadFile("genome.fa.gz", url[0]); err != nil {
-				panic(err)
-			}
+			_, ok := r.Form["overwrite"] // force plot regeneration if overwrite param is present
+			plotFile := processRequest(url[0], ok)
+			plotPath := path.Join(PLOTS, plotFile)
 			page = Page{
-				Title:    "Resulting Skew Plot",
-				Contents: "<img src='/plots/skew.jpg' class='rounded' alt='skew' style='width:90%;height:50%;'>",
+				Title: "Resulting Skew Plot",
+				Contents: template.HTML(fmt.Sprintf(
+					"<img src='/%s' class='rounded' alt='skew' style='width:90%%;height:50%%;'>", plotPath,
+				)),
 			}
 		} else {
 			page = Page{
@@ -78,8 +85,52 @@ func minskewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DownloadFile Download the fa.gz file from the URL and save it on disk
-func DownloadFile(filepath string, url string) error {
+// hash is a helper function for creating a unique string from a url. stolen from stack overflow
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
+}
+
+// processRequest takes a fasta URL then generates a skew plot for it. Caches the plots for efficiency
+func processRequest(url string, overwrite bool) string {
+	hashed := hash(url) // don't regenerate plots we already have
+	plotFile := fmt.Sprintf("skew_%d.jpg", hashed)
+	outfile := fmt.Sprintf("genome_%d.fa.gz", hashed)
+
+	if !plotExists(plotFile) {
+		if err := downloadFile(outfile, url); err != nil {
+			panic(err)
+		}
+		genome := readFile(outfile)
+		skewList := calculateMinSkew(genome)
+		p := plotGraph(skewList)
+		plotPath := path.Join(PLOTS, plotFile)
+		if err := p.Save(12.5*vg.Inch, 5*vg.Inch, plotPath); err != nil {
+			panic(err)
+		}
+		// remove file when done to save disk space
+		if err := os.Remove(outfile); err != nil {
+			panic(err)
+		}
+	}
+	return plotFile
+}
+
+// plotExists checks if a plot exists and returns a boolean accordingly
+func plotExists(file string) bool {
+	if _, err := os.Stat(path.Join(PLOTS, file)); err == nil {
+		return true
+	} else if os.IsNotExist(err) {
+		return false
+	} else {
+		// Schrodinger: file may or may not exist. See err for details.
+		panic(err)
+	}
+}
+
+// downloadFile Download the fa.gz file from the URL and save it on disk
+func downloadFile(filepath string, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -97,8 +148,6 @@ func DownloadFile(filepath string, url string) error {
 		return err
 	}
 
-	ReadFile(filepath)
-
 	return err
 }
 
@@ -112,9 +161,9 @@ func isGzipped(file io.Reader) bool {
 	return testBytes[0] == 31 && testBytes[1] == 139
 }
 
-// ReadFile Read the fa.gz file using gzip package
+// readFile Read the fa.gz file using gzip package
 // Note: Since genomes are large, limit to first 1000 lines
-func ReadFile(filename string) error {
+func readFile(filename string) string {
 	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -141,12 +190,11 @@ func ReadFile(filename string) error {
 			count += 1
 		}
 	}
-	err = CalculateMinSkew(genome)
-	return err
+	return genome
 }
 
-// CalculateMinSkew Calculate MinSkew and save the values to a slice
-func CalculateMinSkew(genome string) error {
+// calculateMinSkew Calculate MinSkew and save the values to a slice
+func calculateMinSkew(genome string) []int {
 	c := 0
 	g := 0
 	skewList := make([]int, 0)
@@ -160,15 +208,14 @@ func CalculateMinSkew(genome string) error {
 		skewList = append(skewList, g-c)
 	}
 
-	err := PlotGraph(skewList)
-	return err
+	return skewList
 }
 
-// PlotGraph Plot the graph for min skew and send it as response to the html page
-func PlotGraph(skewList []int) error {
+// plotGraph Plot the graph for min skew and send it as response to the html page
+func plotGraph(skewList []int) *plot.Plot {
 	p, err := plot.New()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	p.Title.Text = "G-C Skew Along The Genome"
@@ -185,16 +232,12 @@ func PlotGraph(skewList []int) error {
 	// put them into a line plot
 	l, err := plotter.NewLine(pts)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	l.Color = color.RGBA{R: 45, G: 77, B: 240, A: 1}
 	p.Add(l) // add linePlot to plot
 
-	if err := p.Save(12.5*vg.Inch, 5*vg.Inch, "plots/skew.jpg"); err != nil {
-		return err
-	}
-
-	return err
+	return p
 }
 
 // main function holds the information about function handling based on path of the request
