@@ -1,7 +1,8 @@
 *.fasta
 *.gz
-src/app/plots/*.jpg
+src/**/plots/*[.jpg,.png]
 src/app/app
+src/parallelSkew/parallelSkew
 pkg/
 
 
