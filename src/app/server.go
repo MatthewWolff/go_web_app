@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
 	"hash/fnv"
 	"html/template"
-	"image/color"
 	"io"
 	"net/http"
 	"os"
@@ -53,6 +53,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// servePostRequest a helper method to encapsulate JSON shenanigans
 func servePostRequest(w http.ResponseWriter, r *http.Request) {
 	// parse the post request
 	var req PostRequest
@@ -100,8 +101,9 @@ func minskewHandler(w http.ResponseWriter, r *http.Request) {
 		var page Page
 		// check if a URL was supplied
 		if url, ok := r.Form["url"]; ok {
-			_, ok := r.Form["overwrite"] // force plot regeneration if overwrite param is present
-			plotFile := processRequest(url[0], ok)
+			_, overwrite := r.Form["overwrite"] // force plot regeneration if overwrite param is present
+			_, full := r.Form["full"]           // process full plot
+			plotFile := processRequest(url[0], overwrite, full)
 			plotPath := path.Join(PLOTS, plotFile)
 			page = Page{
 				Title: "Resulting Skew Plot",
@@ -128,16 +130,16 @@ func hash(s string) uint32 {
 }
 
 // processRequest takes a fasta URL then generates a skew plot for it. Caches the plots for efficiency
-func processRequest(url string, overwrite bool) string {
+func processRequest(url string, overwrite bool, full bool) string {
 	hashed := hash(url) // don't regenerate plots we already have
 	plotFile := fmt.Sprintf("skew_%d.jpg", hashed)
 	outfile := fmt.Sprintf("genome_%d.fa.gz", hashed)
 
-	if !plotExists(plotFile) {
+	if !plotExists(plotFile) || overwrite {
 		if err := downloadFile(outfile, url); err != nil {
 			panic(err)
 		}
-		genome := readFile(outfile)
+		genome := readFile(outfile, full)
 		skewList := calculateMinSkew(genome)
 		p := plotGraph(skewList)
 		plotPath := path.Join(PLOTS, plotFile)
@@ -198,7 +200,7 @@ func isGzipped(file io.Reader) bool {
 
 // readFile Read the fa.gz file using gzip package
 // Note: Since genomes are large, limit to first 1000 lines
-func readFile(filename string) string {
+func readFile(filename string, full bool) string {
 	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -216,9 +218,15 @@ func readFile(filename string) string {
 	}
 	scanner := bufio.NewScanner(reader)
 
+	var limit uint
+	if full {
+		limit = ^uint(0) // int max
+	} else {
+		limit = 1000
+	}
+	count := uint(0)
 	genome := ""
-	count := 0
-	for scanner.Scan() && count < 1000 {
+	for scanner.Scan() && count < limit {
 		currentLine := scanner.Text()
 		if currentLine[0:1] != ">" {
 			genome += strings.Trim(currentLine, "\n ")
@@ -264,13 +272,8 @@ func plotGraph(skewList []int) *plot.Plot {
 		pts[i].Y = float64(skewList[i])
 	}
 
-	// put them into a line plot
-	l, err := plotter.NewLine(pts)
-	if err != nil {
-		panic(err)
-	}
-	l.Color = color.RGBA{R: 45, G: 77, B: 240, A: 1}
-	p.Add(l) // add linePlot to plot
+	// create the plot
+	_ = plotutil.AddLinePoints(p, "", pts)
 
 	return p
 }

@@ -36,9 +36,16 @@
             Please provide a URL to a .fasta or .fa.gz file:
         </h1>
         <br/>
-        <form action="/minskew" method="get" class="d-flex justify-content-center">
-            <h4> URL:</h4>&nbsp;<input type="text" name="url">
+        <form action="/minskew" method="get" class="justify-content-center">
+            URL:&nbsp;<input type="text" name="url">
             <input type="submit" value="submit">
+            <div class="container"></div>
+            <div class="container">
+                <input id="overwrite" name="overwrite" type="checkbox">
+                <label for="overwrite"> Ignore cached plots? </label>
+                <input id="full" name="full" type="checkbox">
+                <label for="full"> Ignore line count limit? (use all data) </label>
+            </div>
         </form>
     </div>
 </div>
