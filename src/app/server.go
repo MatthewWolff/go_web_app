@@ -49,24 +49,28 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		t.Execute(w, nil) // we could pass a struct in to apply formatting if we wanted
 	} else if r.Method == "POST" {
-		// parse the post request
-		var req PostRequest
-		err := json.NewDecoder(r.Body).Decode(&req)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		// create response
-		response := PostResponse{
-			Msg:  "Hello! Thanks for the POST request.",
-			Keys: fmt.Sprintf("%+v", req),
-		}
-
-		// issue response
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		servePostRequest(w, r)
 	}
+}
+
+func servePostRequest(w http.ResponseWriter, r *http.Request) {
+	// parse the post request
+	var req PostRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// create response
+	response := PostResponse{
+		Msg:  "Hello! Thanks for the POST request.",
+		Keys: fmt.Sprintf("%+v", req),
+	}
+
+	// issue response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 // getUrlHandler Handles get_url request
