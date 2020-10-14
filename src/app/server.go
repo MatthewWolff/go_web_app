@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -26,15 +27,45 @@ type Page struct {
 	Contents template.HTML
 }
 
+// PostResponse a small struct to output a response with
+type PostResponse struct {
+	Msg  string
+	Keys string
+}
+
+// PostRequest the expected structure of the POST request. Non-conforming requests will be (mostly) ignored
+type PostRequest struct {
+	Key1 string
+	Key2 string
+}
+
 // indexHandler Basic index handler for root
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method, "on", "index") //get request method
+	fmt.Println("method:", r.Method, "on", "index") // print request method
 	if r.Method == "GET" {
 		t, err := template.ParseFiles(path.Join(TEMPLATES, "index.html"))
 		if err != nil {
 			panic(err)
 		}
 		t.Execute(w, nil) // we could pass a struct in to apply formatting if we wanted
+	} else if r.Method == "POST" {
+		// parse the post request
+		var req PostRequest
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// create response
+		response := PostResponse{
+			Msg:  "Hello! Thanks for the POST request.",
+			Keys: fmt.Sprintf("%+v", req),
+		}
+
+		// issue response
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -54,7 +85,7 @@ func getUrlHandler(w http.ResponseWriter, r *http.Request) {
 func minskewHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method, "on", "minSkew") //get request method
 	if r.Method == "GET" {
-		r.ParseForm() // parse the query that /should/ be attached to the URL
+		r.ParseForm() // parse the query that *should* be attached to the URL
 
 		// grab template
 		t, err := template.ParseFiles(path.Join(TEMPLATES, "minskew.html"))
@@ -129,7 +160,7 @@ func plotExists(file string) bool {
 	}
 }
 
-// downloadFile Download the fa.gz file from the URL and save it on disk
+// downloadFile Download the fa.gz or fasta file from the URL and save it on disk
 func downloadFile(filepath string, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
