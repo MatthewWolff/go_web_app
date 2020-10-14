@@ -42,7 +42,7 @@ $ curl --request [TYPE (default: GET)] [URL]
     - Every time you put a URL in your browser, it makes a GET request
     - What does a GET request bring back? Usually HTML!
     - You can add parameters to the URL like this: `curl url.com?key1=val&key2=val`
-    ```bash
+    ```html
     $ curl --request GET skew-web-server.herokuapp.com --silent | tail -n 20
     <header class="intro">
         <div class="intro-body">
