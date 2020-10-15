@@ -6,6 +6,17 @@ bash setup.sh  # like this
 go_web_app/setup.sh # or like this
 ```
 
+It should then tell you that the server is live on your local machine (`localhost`)!
+
+Test it out by going to the address it outputs. When asked, try these URLs:
+```
+https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi?id=1061361601&db=nuccore&report=fasta&retmode=text&withmarkup=on&tool=portal&log$=seqview&maxdownloadsize=100000000
+
+https://raw.githubusercontent.com/MatthewWolff/go_web_app/master/src/app/test_data/rickettsia_prowazekii.txt
+
+https://raw.githubusercontent.com/MatthewWolff/go_web_app/master/src/app/test_data/thermotoga_petrophila.txt
+```
+
 ---
 
 # What is a server?
@@ -81,6 +92,10 @@ $ curl --request [TYPE (default: GET)] [URL]
       "Keys": "{Key1:key1 Key2:val2}"
     }
     ```
+    - if you have some trouble running, that try it all on one line:
+    ```bash
+    curl --request POST skew-web-server.herokuapp.com --data '{"Key1": "key1", "key2": "val2"}' --silent
+    ``` 
 * Others
     - Delete, Put, Patch, etc.
     
@@ -156,6 +171,15 @@ Now, any HTTP request to `oursite.com/plots` will be able to access the files st
 makes it very easy to host your app!  
 
 1. Create `server.go`
+    - for this part, we don't want it to be in a project under `src/`!
+    - this is just because Heroku uses some outdated tech ([`GB`](https://github.com/constabulary/gb)) when it senses a `src/` folder
+        - it took me like 2 hours to debug, and I wanted to die
+    - we want the file hierarchy here to be flat, so make a new folder:
+    ```bash
+    mkdir ~/herokuServer
+    cp server.go ~/herokuServer # let's assume `server.go` exists
+    cd ~/herokuServer
+    ```
 2. Make the code check the environment for a `$PORT`
     ```go
    	port, ok := os.LookupEnv("PORT")
