@@ -2,8 +2,8 @@
 *.gz
 src/**/plots/*[.jpg,.png]
 src/app/app
-src/parallelSkew/parallelSkew
 pkg/
+.idea/
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/jetbrains,go,macos
