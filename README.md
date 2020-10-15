@@ -215,6 +215,7 @@ makes it very easy to host your app!
     ```bash
     mkdir ~/herokuServer
     cp server.go ~/herokuServer # let's assume `server.go` exists
+    cp -r site/ ~/herokuServer # assume your site with the templates exists
     cd ~/herokuServer
     ```
 2. Make the code check the environment for a `$PORT`
