@@ -149,6 +149,43 @@ func myHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+### HTML
+While learning HTML is outside the scope of this recitation, it can be a
+useful talent, albeit one which you can get away without having (i.e., 
+if you know markdown you can use `pandoc` to convert it into an HTML page!).
+Here's a [tutorial](https://www.w3schools.com/html/) on HTML. It's pretty basic:
+```HTML
+<html lang="en">
+<head>
+    <!-- you import things here, like Cascading Style Script (CSS) or Javascript --> 
+</head>
+<body>
+    <h1> a header </h1>
+    <h2> a smaller header </h2>
+    <h3> even smaller header </h3>
+    <p> a paragraph </p>
+    
+    My Unordered List:
+    <ul>
+        <li> list item 1 </li>
+        <li> list item 2 </li>
+    </ul>
+    My Ordered List:
+    <ol>
+        <li> list item 1 </li>
+        <li> list item 2 </li>
+    </ol>
+       <form action="/minskew" method="get">
+            URL: <input type="text" name="url">
+            <button type="submit" value="submit"> Submit </button>
+       </form>
+</body>
+</html>
+``` 
+
+<img alt="example" src="./src/app/site/img/example.png" width="600"/>
+
+
     
 # FileServer
 What do you do if you want to use the file system on your server? By default,
